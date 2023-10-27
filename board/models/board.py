@@ -25,11 +25,11 @@ class Board(models.Model):
 
     positions_cross = models.JSONField(
         verbose_name=_("Positions played by cross"),
-        default=constants.get_default_positions(),
+        default=constants.get_default_positions,
     )
     positions_circle = models.JSONField(
         verbose_name=_("Positions played by circle"),
-        default=constants.get_default_positions(),
+        default=constants.get_default_positions,
     )
 
     status = models.IntegerField(

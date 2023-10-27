@@ -8,7 +8,7 @@ from board.models import Board
 
 class Nodes(models.Model):
 
-    board = models.ForeignKey(Board, on_delete=models.CASCADE)
+    board = models.OneToOneField(Board, on_delete=models.CASCADE)
 
     next_player = models.ForeignKey(
         settings.AUTH_USER_MODEL,
