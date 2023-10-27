@@ -6,3 +6,7 @@ STATUS = (
     (3, _("Circle Victory")),
     (4, _("Draw")),
 )
+
+
+def get_default_positions():
+    return {"A": [], "B": [], "C": []}
