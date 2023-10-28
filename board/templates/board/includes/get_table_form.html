@@ -1,0 +1,11 @@
+{% load tables %}
+
+<form action="" method="post">
+    {% csrf_token %}
+    {% autoescape off %}
+        {{ table_string }}
+    {% endautoescape %}
+    {% if next_player %}
+        <button type="submit">Play</button>
+    {% endif %}
+</form>

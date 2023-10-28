@@ -1,0 +1,8 @@
+{% load tables %}
+<div>
+   <div align="center" data-width="50%">
+       {% get_table board.pk user.pk %}
+        <br>
+        <a href="{% url 'account_logout' %}">Logout</a>
+    </div>
+</div>

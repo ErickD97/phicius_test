@@ -38,10 +38,10 @@ class Board(models.Model):
         default=1
     )
 
-    def clean(self):
-        super().clean()
-        if self.player_cross == self.player_circle:
-            raise ValidationError(MESSAGES["SYS001"].value)
+    # def clean(self):
+    #     super().clean()
+    #     if self.player_cross == self.player_circle:
+    #         raise ValidationError(MESSAGES["SYS001"].value)
 
     class Meta:
         ordering = ["-created_at"]

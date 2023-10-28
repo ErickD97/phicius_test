@@ -21,3 +21,5 @@ class CreateBoardForm(forms.ModelForm):
         model = Board
         fields = ["cross_or_circle", "opponent"]
 
+
+
