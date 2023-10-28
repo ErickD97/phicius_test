@@ -9,11 +9,15 @@ def game_flow(instance, created, **kwargs):
     if created:
         Nodes.objects.create(board=instance, next_player=instance.player_circle)
     else:
+        # Get associated node.
         node = Nodes.objects.get(board=instance)
+        # Sort positions in ascending order
         for item in ["A", "B", "C"]:
             instance.positions_circle[item] = instance.positions_circle[item].sort()
             instance.positions_cross[item] = instance.positions_cross[item].sort()
+        # update status according to positions
         instance.status = check_game_status(instance)
+        # sets up the next turn if the game is unfinished
         if instance.status == 1:
             if node.next_player == instance.player_circle:
                 node.next_player = instance.player_cross
