@@ -7,15 +7,23 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DetailView, ListView
 
+from django_tables2 import SingleTableMixin
+from django_filters.views import FilterView
+
+from board.filters import BoardFilter
 from board.forms import CreateBoardForm
 from board.models import Board
+from board.tables import BoardTable
 
 User = get_user_model()
 
 
-@method_decorator(login_required, name="dispatch")
-class BoardList(ListView):
-    model = Board
+class BoardList(SingleTableMixin, FilterView):
+    template_name = "board/board_list.html"
+    paginate_by = 8
+    table_class = BoardTable
+    filterset_class = BoardFilter
+    context_object_name = "board_list"
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -24,6 +32,22 @@ class BoardList(ListView):
         )
         return queryset
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=None, **kwargs)
+        games_as_circle = self.request.user.circle.all()
+        context["boards_as_circle"] = games_as_circle
+        context["victories_as_circle"] = games_as_circle.filter(status=3).count()
+        context["draws_as_circle"] = games_as_circle.filter(status=4).count()
+        games_as_cross = self.request.user.cross.all()
+        context["boards_as_cross"] = games_as_cross
+        context["victories_as_cross"] = games_as_cross.filter(status=2).count()
+        context["draws_as_cross"] = games_as_cross.filter(status=4).count()
+        return context
+
+    def get_filterset_kwargs(self, filterset_class):
+        kwargs = super().get_filterset_kwargs(filterset_class)
+        kwargs['request'] = self.request
+        return kwargs
 
 board_list = BoardList.as_view()
 

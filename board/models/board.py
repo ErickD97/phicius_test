@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.shortcuts import reverse
 from django.utils.translation import gettext_lazy as _
 
 from board import constants
@@ -35,6 +36,9 @@ class Board(models.Model):
         verbose_name=_("Game Status"), choices=constants.STATUS, default=1
     )
 
+    def get_absolute_url(self):
+        return reverse("board:board_play", kwargs={"pk": self.pk})
+
     # def clean(self):
     #     super().clean()
     #     if self.player_cross == self.player_circle:
@@ -42,5 +46,3 @@ class Board(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
-
-        # TODO: Validation for positions.
