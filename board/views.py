@@ -18,6 +18,7 @@ from board.tables import BoardTable
 User = get_user_model()
 
 
+@method_decorator(login_required, name="dispatch")
 class BoardList(SingleTableMixin, FilterView):
     template_name = "board/board_list.html"
     paginate_by = 8

@@ -13,7 +13,6 @@ class CreateBoardForm(forms.ModelForm):
     def __init__(self, user_id=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["opponent"].queryset = User.objects.exclude(id=user_id)
-        a = 1
 
     class Meta:
         model = Board

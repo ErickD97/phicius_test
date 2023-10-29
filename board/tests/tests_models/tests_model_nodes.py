@@ -10,7 +10,7 @@ from utils.test_methods import create_test_instance, bulk_create_test_instances
 User = get_user_model()
 
 
-class BoardModelTests(TestCase):
+class NodesModelTests(TestCase):
     """ Tests for 'board.Nodes' model class. """
     @classmethod
     def setUpTestData(cls):
