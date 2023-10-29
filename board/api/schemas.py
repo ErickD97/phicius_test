@@ -1,15 +1,15 @@
 from typing import List
 
 from django.core.exceptions import ValidationError
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, conlist, constr
 
 from board.models import Board
 from utils.messages import MESSAGES
 
 
 class NewMoveStructure(BaseModel):
-    board_id: list = List[str]
-    position: list = List[str]
+    board_id: conlist(constr(min_length=1), min_length=1)
+    position: conlist(constr(min_length=1), min_length=1)
 
     @field_validator("board_id")
     def board_exists(cls, v, values, **kwargs):

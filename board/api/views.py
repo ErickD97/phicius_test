@@ -28,13 +28,19 @@ class BoardGameplay(viewsets.GenericViewSet, APIView):
     def make_a_play(self, request):
         errors = None
         message = None
+        board_id = None
         try:
             NewMoveStructure(**request.data)
             position = request.data.get("position")
             column, row = position.split("_")
             board_id = int(request.data.get("board_id"))
             assert bool(row) and bool(column), MESSAGES["SYS002"].value
-        except (AssertionError, ValueError, ValidationError, PyValidationError) as ex:
+        except (AssertionError,
+                ValueError,
+                AttributeError,
+                ValidationError,
+                PyValidationError,
+                TypeError) as ex:
             errors = ex
             messages.error(request, [str(error) for error in ex.args])
         try:
@@ -58,6 +64,7 @@ class BoardGameplay(viewsets.GenericViewSet, APIView):
                 board.status = check_game_status(board)
                 board.save()
         except ObjectDoesNotExist as ex:
+            board_id = None
             errors = ex
             messages.error(request, [str(error) for error in ex.args])
         except Exception as ex:
@@ -72,9 +79,14 @@ class BoardGameplay(viewsets.GenericViewSet, APIView):
                 messages.success(request, _("Your victory!"))
             elif board.status == 4:
                 messages.info(request, _("Draw!"))
-        return HttpResponseRedirect(
-            reverse("board:board_play", kwargs={"pk": board_id})
-        )
+        if board_id:
+            return HttpResponseRedirect(
+                reverse("board:board_play", kwargs={"pk": board_id})
+            )
+        else:
+            return HttpResponseRedirect(
+                reverse("board:board_list")
+            )
 
     @swagger_auto_schema(
         method="post",
@@ -87,18 +99,23 @@ class BoardGameplay(viewsets.GenericViewSet, APIView):
         """ Just like the previous one, but intended to return Response objects for POSTMAN interactions and API
         documentation. """
         try:
-            NewMoveStructure(**request.data)
             position = request.data.get("position")
             column, row = position.split("_")
             board_id = int(request.data.get("board_id"))
             assert bool(row) and bool(column), MESSAGES["SYS002"].value
-        except (AssertionError, ValueError, ValidationError, PyValidationError) as ex:
+        except (AssertionError,
+                ValueError,
+                ValidationError,
+                AttributeError,
+                PyValidationError,
+                TypeError) as ex:
             return Response(
                 {"type": "PRECONDITION_FAILED", "errors": [str(error) for error in ex.args]},
                 status=status.HTTP_412_PRECONDITION_FAILED,
             )
         try:
             with transaction.atomic():
+                NewMoveStructure(**request.data)
                 board = Board.objects.get(id=board_id)
                 user = request.user
                 if board.player_circle == user:
@@ -135,7 +152,6 @@ class BoardGameplay(viewsets.GenericViewSet, APIView):
             message = _("Draw.")
         return Response(
             {"success": True, "message": message},
-            headers=cache.no_cache,
             status=status.HTTP_200_OK,
         )
 
