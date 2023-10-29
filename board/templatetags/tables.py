@@ -8,7 +8,10 @@ def get_table(context, board, user):
 
     board = Board.objects.get(id=board)
     table_string = "<table border='1|0'><tr><td></td><td>A</td><td>B</td><td>C</td></tr>"
-    next_player = True if board.nodes.next_player.pk == user else False
+    if board.nodes.next_player is not None:
+        next_player = True if board.nodes.next_player.pk == user else False
+    else:
+        next_player = False
     for row in range(1, 4):
         table_string += f"<tr><td>{row}</td>"
         for column in ["A", "B", "C"]:
@@ -25,4 +28,4 @@ def get_table(context, board, user):
     table_string += "</table>"
 
 
-    return {'table_string': table_string, 'next_player': next_player}
+    return {'table_string': table_string, 'next_player': next_player, "board": board}

@@ -1,8 +1,11 @@
-{% for item in board_list %}
-    -{{ item.player_circle }} vs {{ item.player_cross }} | {{ item.created_at }} <br>
-{% empty %}
-    Currently there are no games, start a new one <a href="{% url 'board:board_create' %}">Here</a>.
-{% endfor %}
+<ol>
+    {% for item in board_list %}
+        <li><a href="{% url 'board:board_play' item.pk %}">{{ item.player_circle }} vs {{ item.player_cross }}</a> | {{ item.created_at }}</li>
+    {% empty %}
+        Currently there are no games, start a new one <a href="{% url 'board:board_create' %}">Here</a>.
+    {% endfor %}
+</ol>
 
+<a href="{% url 'board:board_create' %}">Create new game</a>
 <br>
 <a href="{% url 'account_logout' %}">Logout</a>

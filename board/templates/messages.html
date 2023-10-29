@@ -1,0 +1,14 @@
+{% for message in messages %}
+    {% with tag_bs5=message.extra_tags.tag_bs5 %}
+        <div class="position-fixed top-0 end-0 m-4 block-content-with" style="z-index: 10000">
+            <div class="alert alert-{{ tag_bs5|default:message.level_tag }} alert-top-border alert-dismissible">
+                <button type="button" class="btn-close"
+                        aria-label="Close"></button>
+                <div class="alert-message">
+                    <h5 class="alert-heading">{{ message.level_tag|capfirst }}</h5>
+                    <p class="mb-0 pr-4">{{ message }}</p>
+                </div>
+            </div>
+        </div>
+    {% endwith %}
+{% endfor %}

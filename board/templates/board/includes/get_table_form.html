@@ -1,10 +1,11 @@
 {% load tables %}
 
-<form action="" method="post">
+<form action="{% url 'board:make_movement' %}" method="post">
     {% csrf_token %}
     {% autoescape off %}
         {{ table_string }}
     {% endautoescape %}
+    <input type="hidden" name="board_id" value={{ board.id }}>
     {% if next_player %}
         <button type="submit">Play</button>
     {% endif %}
