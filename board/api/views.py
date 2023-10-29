@@ -1,11 +1,10 @@
 from django.contrib import messages
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, reverse
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
-
 from pydantic import ValidationError as PyValidationError
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
@@ -13,8 +12,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from board.api.schemas import NewMoveStructure
-from board.models import Board
 from board.api.serializers import NewMoveStructureSerializer
+from board.models import Board
 from utils.messages import MESSAGES
 
 
@@ -56,7 +55,7 @@ class BoardGameplay(viewsets.GenericViewSet, APIView):
                     positions_cross.sort()
                 board.status = check_game_status(board)
                 board.save()
-        except (ObjectDoesNotExist) as ex:
+        except ObjectDoesNotExist as ex:
             errors = ex
             messages.error(request, [str(error) for error in ex.args])
         except Exception as ex:
@@ -64,16 +63,19 @@ class BoardGameplay(viewsets.GenericViewSet, APIView):
             messages.error(request, [str(error) for error in ex.args])
         if not errors:
             if board.status == 1:
-                messages.success(request,_("Great! Now wait for your opponent to play."))
+                messages.success(
+                    request, _("Great! Now wait for your opponent to play.")
+                )
             elif board.status in [2, 3]:
                 messages.success(request, _("Your victory!"))
             elif board.status == 4:
                 messages.info(request, _("Draw!"))
-        return HttpResponseRedirect(reverse("board:board_play", kwargs={"pk": board_id}))
+        return HttpResponseRedirect(
+            reverse("board:board_play", kwargs={"pk": board_id})
+        )
 
 
 make_movement = BoardGameplay.as_view({"post": "make_a_play"})
-
 
 
 def check_game_status(board):
@@ -81,9 +83,25 @@ def check_game_status(board):
     status = board.status
 
     # Check for diagonal victory
-    if (1 in board.positions_circle["A"] and 2 in board.positions_circle["B"] and 3 in board.positions_circle["C"]) or (3 in board.positions_circle["A"] and 2 in board.positions_circle["B"] and 1 in board.positions_circle["C"]):
+    if (
+        1 in board.positions_circle["A"]
+        and 2 in board.positions_circle["B"]
+        and 3 in board.positions_circle["C"]
+    ) or (
+        3 in board.positions_circle["A"]
+        and 2 in board.positions_circle["B"]
+        and 1 in board.positions_circle["C"]
+    ):
         status = 3
-    elif (1 in board.positions_cross["A"] and 2 in board.positions_cross["B"] and 3 in board.positions_cross["C"]) or (3 in board.positions_cross["A"] and 2 in board.positions_cross["B"] and 1 in board.positions_cross["C"]):
+    elif (
+        1 in board.positions_cross["A"]
+        and 2 in board.positions_cross["B"]
+        and 3 in board.positions_cross["C"]
+    ) or (
+        3 in board.positions_cross["A"]
+        and 2 in board.positions_cross["B"]
+        and 1 in board.positions_cross["C"]
+    ):
         status = 2
 
     if status != board.status:
@@ -105,8 +123,12 @@ def check_game_status(board):
         return status
 
     # Check for row victories
-    circle_column = set(board.positions_circle["A"]).intersection(set(board.positions_circle["B"]), set(board.positions_circle["C"]))
-    cross_column = set(board.positions_cross["A"]).intersection(set(board.positions_cross["B"]), set(board.positions_cross["C"]))
+    circle_column = set(board.positions_circle["A"]).intersection(
+        set(board.positions_circle["B"]), set(board.positions_circle["C"])
+    )
+    cross_column = set(board.positions_cross["A"]).intersection(
+        set(board.positions_cross["B"]), set(board.positions_cross["C"])
+    )
 
     if circle_column:
         status = 3
@@ -117,5 +139,3 @@ def check_game_status(board):
         if total_moves == 9:
             status = 4
     return status
-
-

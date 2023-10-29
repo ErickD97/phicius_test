@@ -19,7 +19,9 @@ class BoardList(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset.filter(Q(player_cross=self.request.user) | Q(player_circle=self.request.user))
+        queryset.filter(
+            Q(player_cross=self.request.user) | Q(player_circle=self.request.user)
+        )
         return queryset
 
 
@@ -62,4 +64,3 @@ class BoardPlay(DetailView):
 
 
 board_play = BoardPlay.as_view()
-

@@ -5,7 +5,6 @@ from django.db import models
 
 
 class FieldDeconstructMixin:
-
     IGNORED_ATTRS = [
         "verbose_name",
         "help_text",

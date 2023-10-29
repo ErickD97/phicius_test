@@ -10,9 +10,7 @@ class CreateBoardForm(forms.ModelForm):
     cross_or_circle = forms.ChoiceField(choices=((1, "Circle"), (2, "Cross")))
     opponent = forms.ModelChoiceField(queryset=None, to_field_name="username")
 
-    def __init__(
-        self, user_id=None, *args, **kwargs
-    ):
+    def __init__(self, user_id=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["opponent"].queryset = User.objects.exclude(id=user_id)
         a = 1
@@ -20,6 +18,3 @@ class CreateBoardForm(forms.ModelForm):
     class Meta:
         model = Board
         fields = ["cross_or_circle", "opponent"]
-
-
-

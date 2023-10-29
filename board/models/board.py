@@ -1,6 +1,6 @@
-from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from board import constants
@@ -8,7 +8,6 @@ from utils.messages import MESSAGES
 
 
 class Board(models.Model):
-
     player_cross = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name=_("Player Cross"),
@@ -33,9 +32,7 @@ class Board(models.Model):
     )
 
     status = models.IntegerField(
-        verbose_name=_("Game Status"),
-        choices=constants.STATUS,
-        default=1
+        verbose_name=_("Game Status"), choices=constants.STATUS, default=1
     )
 
     # def clean(self):

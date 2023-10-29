@@ -1,6 +1,7 @@
 from django.urls import path
-from board.views import (board_list, board_play, create_board)
+
 from board.api import urls as api_urls
+from board.views import board_list, board_play, create_board
 
 app_name = "board"
 urlpatterns = [
