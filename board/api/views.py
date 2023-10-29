@@ -5,12 +5,14 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, reverse
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
+from drf_yasg.utils import swagger_auto_schema
 from pydantic import ValidationError as PyValidationError
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from board.api.parameters.make_a_play import make_a_play_body, make_a_play_response_dict
 from board.api.schemas import NewMoveStructure
 from board.api.serializers import NewMoveStructureSerializer
 from board.models import Board
@@ -74,8 +76,72 @@ class BoardGameplay(viewsets.GenericViewSet, APIView):
             reverse("board:board_play", kwargs={"pk": board_id})
         )
 
+    @swagger_auto_schema(
+        method="post",
+        operation_description=_("Make a move on the board."),
+        request_body=make_a_play_body,
+        responses=make_a_play_response_dict,
+    )
+    @action(detail=False, methods=["post"])
+    def api_make_a_play(self, request):
+        """ Just like the previous one, but intended to return Response objects for POSTMAN interactions and API
+        documentation. """
+        try:
+            NewMoveStructure(**request.data)
+            position = request.data.get("position")
+            column, row = position.split("_")
+            board_id = int(request.data.get("board_id"))
+            assert bool(row) and bool(column), MESSAGES["SYS002"].value
+        except (AssertionError, ValueError, ValidationError, PyValidationError) as ex:
+            return Response(
+                {"type": "PRECONDITION_FAILED", "errors": [str(error) for error in ex.args]},
+                status=status.HTTP_412_PRECONDITION_FAILED,
+            )
+        try:
+            with transaction.atomic():
+                board = Board.objects.get(id=board_id)
+                user = request.user
+                if board.player_circle == user:
+                    if isinstance(board.positions_circle[column], list):
+                        board.positions_circle[column].append(int(row))
+                    else:
+                        board.positions_circle[column] = [int(row)]
+                    positions_circle = board.positions_circle[column]
+                    positions_circle.sort()
+                else:
+                    if isinstance(board.positions_cross[column], list):
+                        board.positions_cross[column].append(int(row))
+                    else:
+                        board.positions_cross[column] = [int(row)]
+                    positions_cross = board.positions_cross[column]
+                    positions_cross.sort()
+                board.status = check_game_status(board)
+                board.save()
+        except ObjectDoesNotExist as ex:
+            return Response(
+                {"type": "BAD_REQUEST", "errors": [str(error) for error in ex.args]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except Exception as ex:
+            return Response(
+                {"type": "BAD_REQUEST", "errors": [str(error) for error in ex.args]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if board.status == 1:
+            message = _("Great! Now wait for your opponent to play.")
+        elif board.status in [2, 3]:
+            message = _("Your Victory!")
+        else:
+            message = _("Draw.")
+        return Response(
+            {"success": True, "message": message},
+            headers=cache.no_cache,
+            status=status.HTTP_200_OK,
+        )
+
 
 make_movement = BoardGameplay.as_view({"post": "make_a_play"})
+api_make_movement = BoardGameplay.as_view({"post": "api_make_a_play"})
 
 
 def check_game_status(board):
