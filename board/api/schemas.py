@@ -1,7 +1,7 @@
 from typing import List
 
 from django.core.exceptions import ValidationError
-from pydantic import BaseModel, Field, field_validator, conlist, constr
+from pydantic import BaseModel, Field, conlist, constr, field_validator
 
 from board.models import Board
 from utils.messages import MESSAGES

@@ -6,9 +6,8 @@ from django.shortcuts import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DetailView, ListView
-
-from django_tables2 import SingleTableMixin
 from django_filters.views import FilterView
+from django_tables2 import SingleTableMixin
 
 from board.filters import BoardFilter
 from board.forms import CreateBoardForm
@@ -47,8 +46,9 @@ class BoardList(SingleTableMixin, FilterView):
 
     def get_filterset_kwargs(self, filterset_class):
         kwargs = super().get_filterset_kwargs(filterset_class)
-        kwargs['request'] = self.request
+        kwargs["request"] = self.request
         return kwargs
+
 
 board_list = BoardList.as_view()
 

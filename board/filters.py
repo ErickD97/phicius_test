@@ -17,21 +17,37 @@ class PlayerTypeFilter(django_filters.ChoiceFilter):
             return qs.filter(player_circle=self.parent.request.user)
         return qs
 
+
 class VictoryFilter(django_filters.ChoiceFilter):
     field_name = "won"
     label = "Victory"
+
     def filter(self, qs, value):
         if value == "won":
-            return qs.filter(Q(player_cross=self.parent.request.user, status=2) | Q(player_circle=self.parent.request.user, status=3))
+            return qs.filter(
+                Q(player_cross=self.parent.request.user, status=2)
+                | Q(player_circle=self.parent.request.user, status=3)
+            )
         elif value == "loss":
-            return qs.filter(Q(player_cross=self.parent.request.user, status=3) | Q(player_circle=self.parent.request.user, status=2))
+            return qs.filter(
+                Q(player_cross=self.parent.request.user, status=3)
+                | Q(player_circle=self.parent.request.user, status=2)
+            )
         elif value == "draw":
-            return qs.filter(Q(player_cross=self.parent.request.user, status=4) | Q(player_circle=self.parent.request.user, status=4))
+            return qs.filter(
+                Q(player_cross=self.parent.request.user, status=4)
+                | Q(player_circle=self.parent.request.user, status=4)
+            )
         return qs
 
+
 class BoardFilter(django_filters.FilterSet):
-    player_type = PlayerTypeFilter(choices=[("cross", "Crosses"), ("circle", "Circles")])
-    won = VictoryFilter(choices=[("won", "Victory"), ("loss", "Defeat"), ("draw", "Draw")])
+    player_type = PlayerTypeFilter(
+        choices=[("cross", "Crosses"), ("circle", "Circles")]
+    )
+    won = VictoryFilter(
+        choices=[("won", "Victory"), ("loss", "Defeat"), ("draw", "Draw")]
+    )
 
     # @property
     # def qs(self, user_id=None):
@@ -40,7 +56,7 @@ class BoardFilter(django_filters.FilterSet):
 
     class Meta:
         model = Board
-        fields =    ("player_type", "won")
+        fields = ("player_type", "won")
         filter_overrides = {
             models.CharField: {
                 "filter_class": django_filters.CharFilter,
@@ -49,5 +65,3 @@ class BoardFilter(django_filters.FilterSet):
                 },
             },
         }
-
-

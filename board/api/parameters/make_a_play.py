@@ -4,7 +4,9 @@ from drf_yasg import openapi
 position_key = openapi.Schema(
     title=_("Position"),
     type=openapi.TYPE_STRING,
-    description=_("Position in the board for the next move, the value is presented as 'column_row', where column goes from 'A' to 'C' and row goes from 1 to 3, any other value is unacceptable and the string must be capitalized."),
+    description=_(
+        "Position in the board for the next move, the value is presented as 'column_row', where column goes from 'A' to 'C' and row goes from 1 to 3, any other value is unacceptable and the string must be capitalized."
+    ),
 )
 
 board_id_key = openapi.Schema(
@@ -14,10 +16,10 @@ board_id_key = openapi.Schema(
     description=_("ID of the board in which the play takes place."),
 )
 
-make_a_play_body =openapi.Schema(
+make_a_play_body = openapi.Schema(
     type=openapi.TYPE_OBJECT,
     required=["*"],
-    properties={"position": position_key, "board_id": board_id_key}
+    properties={"position": position_key, "board_id": board_id_key},
 )
 
 make_a_play_response_dict = {
@@ -39,9 +41,7 @@ make_a_play_response_dict = {
                 "success": openapi.Schema(
                     type=openapi.TYPE_BOOLEAN,
                     read_only=True,
-                    description=_(
-                        "Boolean value, True if the play was successful"
-                    ),
+                    description=_("Boolean value, True if the play was successful"),
                 ),
             },
         ),
@@ -50,10 +50,12 @@ make_a_play_response_dict = {
                 "success": True,
                 "message": _("Great! Now wait for your opponent to play."),
             }
-        }
+        },
     ),
     "400": openapi.Response(
-        description=_("There was a validation error with the data and description of it will be shown."),
+        description=_(
+            "There was a validation error with the data and description of it will be shown."
+        ),
         schema=openapi.Schema(
             title=_("Invalid move or data."),
             type=openapi.TYPE_OBJECT,
@@ -63,7 +65,9 @@ make_a_play_response_dict = {
                 "type": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     read_only=True,
-                    description=_("Brief description of the error, 'BAD_REQUEST' by default"),
+                    description=_(
+                        "Brief description of the error, 'BAD_REQUEST' by default"
+                    ),
                     default=_("BAD_REQUEST"),
                 ),
                 "errors": openapi.Schema(
@@ -87,7 +91,7 @@ make_a_play_response_dict = {
                 "type": "BAD_REQUEST",
                 "errors": {"board_id": ["'board_id' must be a valid integer."]},
             }
-        }
+        },
     ),
     "412": openapi.Response(
         description=_("There was a problem with the sent payload."),
@@ -100,7 +104,9 @@ make_a_play_response_dict = {
                 "type": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     read_only=True,
-                    description=_("Brief description of the error, 'PRECONDITION_FAILED' by default"),
+                    description=_(
+                        "Brief description of the error, 'PRECONDITION_FAILED' by default"
+                    ),
                     default=_("PRECONDITION_FAILED"),
                 ),
                 "errors": openapi.Schema(
@@ -124,6 +130,6 @@ make_a_play_response_dict = {
                 "type": "PRECONDITION_FAILED",
                 "errors": {"board_id": ["This is a required field."]},
             }
-        }
+        },
     ),
 }

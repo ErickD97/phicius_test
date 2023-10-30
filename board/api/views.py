@@ -12,7 +12,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from board.api.parameters.make_a_play import make_a_play_body, make_a_play_response_dict
+from board.api.parameters.make_a_play import (make_a_play_body,
+                                              make_a_play_response_dict)
 from board.api.schemas import NewMoveStructure
 from board.api.serializers import NewMoveStructureSerializer
 from board.models import Board
@@ -35,12 +36,14 @@ class BoardGameplay(viewsets.GenericViewSet, APIView):
             column, row = position.split("_")
             board_id = int(request.data.get("board_id"))
             assert bool(row) and bool(column), MESSAGES["SYS002"].value
-        except (AssertionError,
-                ValueError,
-                AttributeError,
-                ValidationError,
-                PyValidationError,
-                TypeError) as ex:
+        except (
+            AssertionError,
+            ValueError,
+            AttributeError,
+            ValidationError,
+            PyValidationError,
+            TypeError,
+        ) as ex:
             errors = ex
             messages.error(request, [str(error) for error in ex.args])
         try:
@@ -84,9 +87,7 @@ class BoardGameplay(viewsets.GenericViewSet, APIView):
                 reverse("board:board_play", kwargs={"pk": board_id})
             )
         else:
-            return HttpResponseRedirect(
-                reverse("board:board_list")
-            )
+            return HttpResponseRedirect(reverse("board:board_list"))
 
     @swagger_auto_schema(
         method="post",
@@ -96,21 +97,26 @@ class BoardGameplay(viewsets.GenericViewSet, APIView):
     )
     @action(detail=False, methods=["post"])
     def api_make_a_play(self, request):
-        """ Just like the previous one, but intended to return Response objects for POSTMAN interactions and API
-        documentation. """
+        """Just like the previous one, but intended to return Response objects for POSTMAN interactions and API
+        documentation."""
         try:
             position = request.data.get("position")
             column, row = position.split("_")
             board_id = int(request.data.get("board_id"))
             assert bool(row) and bool(column), MESSAGES["SYS002"].value
-        except (AssertionError,
-                ValueError,
-                ValidationError,
-                AttributeError,
-                PyValidationError,
-                TypeError) as ex:
+        except (
+            AssertionError,
+            ValueError,
+            ValidationError,
+            AttributeError,
+            PyValidationError,
+            TypeError,
+        ) as ex:
             return Response(
-                {"type": "PRECONDITION_FAILED", "errors": [str(error) for error in ex.args]},
+                {
+                    "type": "PRECONDITION_FAILED",
+                    "errors": [str(error) for error in ex.args],
+                },
                 status=status.HTTP_412_PRECONDITION_FAILED,
             )
         try:

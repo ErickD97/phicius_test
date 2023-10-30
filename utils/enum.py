@@ -47,4 +47,3 @@ class EnumMetaClass(type):
 
 class Enum(metaclass=EnumMetaClass):
     pass
-

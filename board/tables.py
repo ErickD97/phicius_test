@@ -6,7 +6,6 @@ from board.models import Board
 
 
 class BoardTable(tables.Table):
-
     class Meta:
         model = Board
         fields = ("player_circle", "player_cross", "status")
@@ -27,4 +26,3 @@ class BoardTable(tables.Table):
             return format_html(f"<a href={url}>{_('Circle Victory')}</a>")
         elif value == "Draw":
             return format_html(f"<a href={url}>{_('Draw')}</a>")
-

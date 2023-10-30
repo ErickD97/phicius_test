@@ -30,9 +30,7 @@ def bulk_create_test_instances(values, model, has_constraints=False):
     eval_dict = {}
     for item in values:
         eval_dict.update(item[0])
-        instance, errors = create_test_instance(
-            values=eval_dict, model=model
-        )
+        instance, errors = create_test_instance(values=eval_dict, model=model)
         if item[1]:
             instance_check = isinstance(instance, model)
             success_list.append(instance_check)

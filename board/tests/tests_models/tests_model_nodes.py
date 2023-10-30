@@ -5,18 +5,21 @@ from django.shortcuts import reverse
 from django.test import TestCase
 
 from board.models import Board, Nodes
-from utils.test_methods import create_test_instance, bulk_create_test_instances
+from utils.test_methods import bulk_create_test_instances, create_test_instance
 
 User = get_user_model()
 
 
 class NodesModelTests(TestCase):
-    """ Tests for 'board.Nodes' model class. """
+    """Tests for 'board.Nodes' model class."""
+
     @classmethod
     def setUpTestData(cls):
         cls.user1 = User.objects.create_user(username="Erick", password="abc*.123")
         cls.user2 = User.objects.create_user(username="Erick1", password="abc*.123")
-        cls.board = Board.objects.create(player_circle=cls.user1, player_cross=cls.user2)
+        cls.board = Board.objects.create(
+            player_circle=cls.user1, player_cross=cls.user2
+        )
 
     def test_board_field(self):
         """
@@ -29,12 +32,18 @@ class NodesModelTests(TestCase):
             [{"next_player": self.user1}, False],
             [{"board": self.board}, True],
         ]
-        success, errors = bulk_create_test_instances(values=values, model=Nodes, has_constraints=True)
-        instance, instance_errors = create_test_instance(values={"board": self.board, "next_player": self.user1}, model=Nodes)
+        success, errors = bulk_create_test_instances(
+            values=values, model=Nodes, has_constraints=True
+        )
+        instance, instance_errors = create_test_instance(
+            values={"board": self.board, "next_player": self.user1}, model=Nodes
+        )
         self.assertIsInstance(instance, Nodes)
         self.board.delete()
         success.append(not Nodes.objects.filter(board_id=self.board.pk).exists())
-        new_board = Board.objects.create(player_circle=self.user1, player_cross=self.user2)
+        new_board = Board.objects.create(
+            player_circle=self.user1, player_cross=self.user2
+        )
         success.append(Nodes.objects.filter(board_id=new_board.pk).exists())
         self.assertTrue(all(success))
 

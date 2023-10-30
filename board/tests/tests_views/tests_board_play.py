@@ -10,19 +10,21 @@ User = get_user_model()
 
 
 class BoardPlayTests(TestCase):
-    """ Tests for 'board:board_play' view. """
+    """Tests for 'board:board_play' view."""
 
     @classmethod
     def setUpTestData(cls):
         cls.user1 = User.objects.create_user(username="Erick", password="abc*.123")
         cls.user2 = User.objects.create_user(username="Erick1", password="abc*.123")
         cls.user3 = User.objects.create_user(username="Erick2", password="abc*.123")
-        cls.board = Board.objects.create(player_circle=cls.user1, player_cross=cls.user2)
+        cls.board = Board.objects.create(
+            player_circle=cls.user1, player_cross=cls.user2
+        )
 
         cls.url = reverse("board:board_play", kwargs={"pk": cls.board.pk})
 
     def test_authentication_required(self):
-        """ Test to check that only authenticated users can access this view. """
+        """Test to check that only authenticated users can access this view."""
         success = []
         response = self.client.get(self.url)
         success.extend(
@@ -42,8 +44,8 @@ class BoardPlayTests(TestCase):
         self.assertTrue(all(success))
 
     def test_get_request(self):
-        """ Test to check that correct parameters are sent over this type of requests. """
-        success =[]
+        """Test to check that correct parameters are sent over this type of requests."""
+        success = []
         self.client.force_login(user=self.user1)
         response = self.client.get(self.url)
         success.extend(
